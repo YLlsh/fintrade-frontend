@@ -4,15 +4,19 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ContractKYC from "./pages/student/ContractKYC";
 import AdminContracts from "./pages/admin/AdminContracts";
+import PaymentSuccess from "./pages/payment/PaymentSuccess";
+import PaymentFailure from "./pages/payment/PaymentFailure";
 import CategoryPage from "./pages/CategoryPage";
 import CoursesPage from "./pages/CoursesPage";
 import MarketsPage from "./pages/MarketsPage";
 import MarketUpdatesPage from "./pages/MarketUpdatesPage";
 import BlogPage from "./pages/BlogPage";
 import MarketingLayout from "./components/MarketingLayout";
+import AboutUs from "./pages/AboutUs";
 
 // Student Pages
 import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentProfile from "./pages/student/StudentProfile";
 import EntranceExam from "./pages/student/EntranceExam";
 import CourseEnrollment from "./pages/student/CourseEnrollment";
 import Modules from "./pages/student/Modules";
@@ -86,6 +90,10 @@ export const router = createBrowserRouter([
         path: "/blog",
         Component: BlogPage,
       },
+      {
+        path: "/about",
+        Component: AboutUs,
+      },
     ]
   },
   {
@@ -96,10 +104,23 @@ export const router = createBrowserRouter([
     path: "/register",
     Component: RegisterPage,
   },
+  // Payment Routes
+  {
+    path: "/payment/success",
+    Component: PaymentSuccess,
+  },
+  {
+    path: "/payment/failure",
+    Component: PaymentFailure,
+  },
   // Student Routes
   {
     path: "/student/dashboard",
     Component: StudentDashboard,
+  },
+  {
+    path: "/student/profile",
+    Component: StudentProfile,
   },
   {
     path: "/student/entrance-exam",
@@ -187,7 +208,11 @@ export const router = createBrowserRouter([
     Component: TeacherExams,
   },
   {
-    path: "/teacher/exams/:examId/questions", Component: QuestionBuilder, }, { path: "/admin/exams/:examId/questions",
+    path: "/teacher/exams/:examId/questions",
+    Component: QuestionBuilder,
+  },
+  {
+    path: "/admin/exams/:examId/questions",
     Component: QuestionBuilder,
   },
   {
@@ -259,10 +284,9 @@ export const router = createBrowserRouter([
     path: "/admin/cms",
     Component: AdminCMS,
   },
-  // Distributor Routes
+  // Distributor Pages
   {
     path: "/distributor/dashboard",
     Component: DistributorDashboard,
   },
 ]);
-

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -35,10 +36,36 @@ export default function RegisterPage() {
       localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       
-      // Navigate to student dashboard since new registrations are students by default
-      navigate("/student/dashboard");
+      navigate("/");
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.detail || "Registration failed. Email might already exist.");
+      let errorMessage = "Registration failed. Email might already exist.";
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => e.msg).join(", ");
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMessage = err.response.data.detail;
+        }
+      }
+      setErrorMsg(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const response = await api.post("/auth/google", {
+        token: credentialResponse.credential,
+        phone,
+      });
+      const { access_token, user } = response.data;
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/");
+    } catch (err: any) {
+      setErrorMsg(err.response?.data?.detail || "Google sign-in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +86,18 @@ export default function RegisterPage() {
             <ArrowLeft size={20} />
             <span>Back to Home</span>
           </Link>
-          <div className="mb-8">
-            <img src={logo} alt="FinTrade" className="h-16 mb-6" />
+          <div className="mb-8 flex flex-col gap-4">
+            <div className="flex items-center h-[85px] w-[240px] pb-3 overflow-hidden">
+              <img
+                src={logo}
+                alt="FinTrade"
+                className="h-full w-full object-contain scale-[3.5] -translate-x-4 -translate-y-1.5"
+                style={{
+                  filter: "invert(1) hue-rotate(180deg) brightness(1.35) contrast(1.05) drop-shadow(0 4px 12px rgba(255,255,255,0.08))",
+                  transformOrigin: "center center"
+                }}
+              />
+            </div>
             <p className="text-gray-300">Professional Trading Education Platform</p>
           </div>
           <h2 className="text-3xl font-bold mb-4">Start Your Journey</h2>
@@ -188,7 +225,26 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="mt-8 text-center">
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setErrorMsg("Google sign-in failed. Please try again.")}
+              size="large"
+              width="100%"
+              text="signup_with"
+            />
+          </div>
+
+          <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
               <Link to="/login" className="hover:underline font-semibold" style={{ color: '#D50032' }}>
